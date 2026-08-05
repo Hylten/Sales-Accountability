@@ -110,11 +110,7 @@
   <div class="container">
     <div class="kicker">Referenser</div>
     <h2 class="sec">Recommendations</h2>
-    <div class="chips">
-      <span class="chip active">Received <span id="recCount"></span></span>
-      <span class="chip">Given</span>
-      <span class="chip">Pending</span>
-    </div>
+    <p class="sec-intro">Rekommendationer från kunder, kollegor, mentorer och medarbetare.</p>
     <div class="recs" id="recs"></div>
   </div>
 </section>
@@ -174,10 +170,17 @@ logos.forEach(l => {
   img.title = l.n;
   img.loading = "lazy";
   img.onerror = () => {
-    const s = document.createElement("span");
-    s.className = "logo-text";
-    s.textContent = l.n;
-    img.replaceWith(s);
+    const tile = document.createElement("span");
+    tile.className = "logo-tile";
+    const ini = document.createElement("span");
+    ini.className = "logo-initial";
+    ini.textContent = l.n.charAt(0).toUpperCase();
+    const nm = document.createElement("span");
+    nm.className = "logo-name";
+    nm.textContent = l.n;
+    tile.appendChild(ini);
+    tile.appendChild(nm);
+    img.replaceWith(tile);
   };
   wall.appendChild(img);
 });
@@ -221,13 +224,10 @@ const recs = [
   {n: "Michael Yammin Finta", h: "Marketing Manager at CR Group", m: "September 29, 2015, Michael was Jonas's client", t: "Jonas är noga och lojal. Han sprider ett förtroende som person och uppgiften."},
   {n: "Patrik Wohlfeil", h: "Ökar bolags intäkter och kompetens inom försäljning och marknadskommunikation", m: "August 19, 2012, Patrik worked with Jonas but they were at different companies", t: "Jag har haft nöjet att utbilda Jonas i försäljning och Jonas tillhör dom få procenten som en säljchef alltid letar efter i sitt team. Lycka till!"}
 ];
-document.getElementById("recCount").textContent = recs.length;
 const box = document.getElementById("recs");
-recs.forEach(r => {
+function renderRec(r) {
   const card = document.createElement("div");
   card.className = "rec";
-  const who = document.createElement("div");
-  who.className = "who";
   const name = document.createElement("div");
   name.className = "name";
   name.textContent = r.n;
@@ -240,13 +240,27 @@ recs.forEach(r => {
   const body = document.createElement("div");
   body.className = "body";
   body.innerHTML = r.t;
-  who.appendChild(name);
-  who.appendChild(head);
-  card.appendChild(who);
+  card.appendChild(name);
+  card.appendChild(head);
   card.appendChild(meta);
   card.appendChild(body);
-  box.appendChild(card);
-});
+  return card;
+}
+const PER_PAGE = 6;
+recs.slice(0, PER_PAGE).forEach(r => box.appendChild(renderRec(r)));
+if (recs.length > PER_PAGE) {
+  const more = document.createElement("div");
+  more.className = "recs-more";
+  const btn = document.createElement("button");
+  btn.className = "btn btn-ghost";
+  btn.textContent = "Visa alla " + recs.length + " rekommendationer";
+  btn.addEventListener("click", () => {
+    recs.slice(PER_PAGE).forEach(r => box.appendChild(renderRec(r)));
+    more.remove();
+  });
+  more.appendChild(btn);
+  box.after(more);
+}
 </script>
 
 </body>
