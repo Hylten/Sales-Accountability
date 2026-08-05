@@ -3,7 +3,7 @@ title: "Dina affärer dör i uppföljningen, inte i lead-flödet"
 slug: "dina-affarer-dor-i-uppfoljningen"
 description: "De flesta B2B SaaS-grundare tror att problemet är för få leads. Sanningen är att affärerna dör i uppföljningen, långt efter första mötet."
 date: "2026-08-05"
-tags: ["Uppföljning", "BFL", "B2B SaaS", "Säljprocess"]
+tags: ["Uppföljning", "B2B SaaS", "Säljprocess"]
 categories: ["Intelligence"]
 canonical_url: "https://hylten.github.io/Sales-Accountability/blog/dina-affarer-dor-i-uppfoljningen/"
 meta_title: "Dina affärer dör i uppföljningen, inte i lead-flödet"
@@ -25,7 +25,7 @@ Uppföljning sker när någon råkar komma ihåg. Det finns ingen tidslinje, ing
 
 Struktur är inte byråkrati. Struktur är att veta att varje affär får exakt samma chans, oavsett vem som bär den. Utan struktur överlever bara de affärer där kunden själv driver processen och de är sällsynta.
 
-### Hål 2: Ingen BFL
+### Hål 2: Ingen systematisk uppföljning
 
 Begriplig, frekvent, långsiktig uppföljning är grunden i all seriös försäljning. De flesta team har ingen metod alls. Kalla leads lämnas utan system och varma leads behandlas som om de vore självklara.
 
@@ -86,4 +86,4 @@ Ett CRM är en lagringsplats, inte ett beteende. Systemet registrerar uppföljni
 
 ## Sammanfattning
 
-Affärer dör i uppföljningen, inte i lead-flödet. De tre hålen är avsaknad av struktur, avsaknad av BFL och avsaknad av ägarskap. Lösningen är enkel: tydliga nästa steg, uppföljning inom 24 timmar, en ägare per affär och veckovis granskning av beteendet. Du behöver inte bli barnvakt. Du behöver ett system som granskas varje vecka. Börja med att mäta uppföljningen, så förändras allt annat av sig självt.
+Affärer dör i uppföljningen, inte i lead-flödet. De tre hålen är avsaknad av struktur, avsaknad av systematisk uppföljning och avsaknad av ägarskap. Lösningen är enkel: tydliga nästa steg, uppföljning inom 24 timmar, en ägare per affär och veckovis granskning av beteendet. Du behöver inte bli barnvakt. Du behöver ett system som granskas varje vecka. Börja med att mäta uppföljningen, så förändras allt annat av sig självt.
