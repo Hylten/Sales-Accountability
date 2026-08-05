@@ -98,6 +98,27 @@
   </div>
 </section>
 
+<section class="block" id="kunder">
+  <div class="container">
+    <div class="kicker">Kunder</div>
+    <h2 class="sec">Jonas kunder har inkluderat</h2>
+    <div class="logo-wall" id="logowall"></div>
+  </div>
+</section>
+
+<section class="block" id="referenser">
+  <div class="container">
+    <div class="kicker">Referenser</div>
+    <h2 class="sec">Recommendations</h2>
+    <div class="chips">
+      <span class="chip active">Received <span id="recCount"></span></span>
+      <span class="chip">Given</span>
+      <span class="chip">Pending</span>
+    </div>
+    <div class="recs" id="recs"></div>
+  </div>
+</section>
+
 <section class="block" id="kontakt">
   <div class="container">
     <div class="cta-block">
@@ -129,6 +150,103 @@ document.getElementById("posts").innerHTML = posts.map(p =>
   '<p>' + p.desc + '</p>' +
   '<div class="more">Läs artikel →</div></a>'
 ).join("");
+</script>
+
+<script>
+/* Logotyper (gråskala) */
+const logos = [
+  {n: "Saab", d: "saab.com"},
+  {n: "Försvarsmakten", d: "forsvarsmakten.se"},
+  {n: "Ericsson", d: "ericsson.com"},
+  {n: "Husqvarna Group", d: "husqvarnagroup.com"},
+  {n: "EQT", d: "eqtgroup.com"},
+  {n: "Epassi", d: "epassi.com"},
+  {n: "Kommerskollegium", d: "kommerskollegium.se"},
+  {n: "Science Park Jönköping", d: "sciencepark.se"},
+  {n: "Bonnier", d: "bonnier.com"},
+  {n: "Krets Consulting Group", d: "krets.se"}
+];
+const wall = document.getElementById("logowall");
+logos.forEach(l => {
+  const img = document.createElement("img");
+  img.src = "https://logo.clearbit.com/" + l.d;
+  img.alt = l.n;
+  img.title = l.n;
+  img.loading = "lazy";
+  img.onerror = () => {
+    const s = document.createElement("span");
+    s.className = "logo-text";
+    s.textContent = l.n;
+    img.replaceWith(s);
+  };
+  wall.appendChild(img);
+});
+
+/* Rekommendationer (ordagrant, ej översatta) */
+const recs = [
+  {n: "Emanuel Woodhouse Schmit", h: "Impact Infrastructure Partnerships | Ethics &amp; Governance | Long-Term Capital Alignment", m: "February 26, 2025, Emanuel worked with Jonas but they were at different companies", t: "Jonas brings energy to the table and creates momentum forward even in tight situations. His focus and dedication to deliver value is always impressive and together with his growth mindset a rare combination of excellence. Can recommend for anyone wanting to move forward in areas of strategic investments, marketing and entrepreneurship."},
+  {n: "Frank J. Braider III", h: "J.D. Winston, Carolina Outpatient Detox, Stonegate Capital, &amp; PropertyCapitalAI", m: "February 20, 2025, Frank J. was Jonas's mentor", t: "Jonas has been instrumental in helping develop business strategies, success mindset, raising capital and in driving impactful sales and marketing initiatives. As a professional, he understands motives and motivation as well as business analysis, providing unparalleled guidance."},
+  {n: "Zlatin Manahov", h: "Head of Growth @ Cold Labs | Clay Experts", m: "June 25, 2024, Zlatin was Jonas's client", t: "Jonas's coaching on personal branding &amp; marketing transformed my approach to content creation. Saw a significant improvement in client response. I recommend booking a call with him if you want more success for your brand!"},
+  {n: "Martin Thelin", h: "Automation 🤖Electrical Engineering ⚡️and tech ➕| For a better future!", m: "December 12, 2023, Martin worked with Jonas but they were at different companies", t: "Jonas stands out as a coach and mentor for those keen to hone their talents, cultivate strong relationships, and excel in business. With a formidable nearly two decades of hands-on experience in digital marketing and sales, he delivers insights grounded in deep industry knowledge. What sets Jonas apart is his: ☑️Commitment to deep, meaningful discussions, even beyond typical hours. Emphasis on family, reflecting his core values. ☑️ Drive in propelling his businesses forward. ☑️ Continuous pursuit of the latest methods and best practices in sales and marketing. ☑️ Generosity in sharing his wealth of knowledge and expertise with those he mentors."},
+  {n: "Magnus Petersson", h: "Senior Software Engineer på Husqvarna Group", m: "October 10, 2023, Magnus was Jonas's client", t: "Jonas at Krets Consulting Group AB instills confidence. With his deep knowledge of sales and digital marketing, he maintains a vast network that swiftly finds the right projects for R&amp;D/IT Engineering consultants."},
+  {n: "Christopher Wingård", h: "Senior Trade Policy Adviser, National Board of Trade", m: "October 4, 2023, Christopher was Jonas's client", t: "I had the privilege to work with Jonas on Marketing projects for the National Board of Trade. His positive attitude, expertise, and consistent availability made collaboration a breeze. It's always straightforward working with Jonas."},
+  {n: "Robin Isaksson", h: "Ultra-runner and entrepreneur", m: "September 26, 2023, Robin worked with Jonas on the same team", t: "Jonas Hyltén is one of the most hardworking and driven individuals I know in the sales and marketing industries. Having had the privilege to be coached by him, I can't recommend him highly enough. ✋🏼✋🏼"},
+  {n: "Victor Dahl", h: "Vice President | Business Line Control at EQT Group", m: "September 25, 2023, Victor reported to Jonas directly", t: "I highly recommend Jonas. I reported directly to Jonas for 9 months as part of my position as Non-Executive Financial Director and Board member of Pathmaker, an investment company. Jonas is the Founding Director and CEO. Jonas is not only extremely professional, dedicated, and ambitious but also has a deep understanding of sales and marketing, which adds another layer to his diverse skill set. He encompasses the skills of a leader with natural grit and takes on the mantle as a leader with true compassion for his fellow colleagues and direct reporters. During my time as board member, Jonas presented me with lots of responsibility and confidence to allow for growth, and continuously made sure we were in sync, especially during more intense periods. Jonas faced any obstacle or challenge with great enthusiasm and creativity, always finding a new approach to achieve our objectives and move forward towards set goals. As an individual, Jonas exudes calmness and professionalism. He's dedicated to time management and ensures all perspectives are considered. Jonas's persistence, high energy, and innovative mindset, likely influenced by his athletic pursuits offline, enabled him to establish Pathmaker, attract talented professionals to the board, and garner interest from numerous investors and potential sellers. Working alongside Jonas was truly a pleasure, and I highly recommend including him in your network if you haven't already done so!"},
+  {n: "Joel Sundström", h: "Science Park - vi är här för att drömmen inte bara måste vara en dröm. Vi hjälper idébärare att bli världsförändrare!", m: "September 19, 2023, Joel was Jonas's client", t: "Jonas is skilled in communication and execution of marketing. I can recommend using Jonas' expertise."},
+  {n: "Malin Björklund", h: "Head of Sales - Epassi", m: "September 18, 2023, Malin was senior to Jonas but didn't manage Jonas directly", t: "Jonas is honest and customer-driven, always giving his utmost to do a good job. I believe Jonas's ability to quickly assimilate new knowledge, combined with his talent for merging customer and business value within digital marketing, make him valuable in any type of company."},
+  {n: "Kristoffer Sjöholm", h: "Engineer", m: "September 18, 2023, Kristoffer worked with Jonas but they were at different companies", t: "Jonas is a highly competent individual with notable expertise in sales and marketing. His willingness to try new things is impressive. His leadership is world-class and very charismatic. Having Jonas on the team provides assurance and increases the chances of success. Besides his business acumen, he is knowledgeable in many areas and just a great person to have a beer with."},
+  {n: "Paolo Lulli", h: "Helping OEMs build Industrial IOT solutions. Think the Cloud, but without the Lock-In.", m: "September 18, 2023, Jonas was senior to Paolo but didn't manage Paolo directly", t: "Jonas distinguishes himself in the sales and digital marketing domain through his unparalleled moral qualities, especially his integrity. When sealing a deal, he ensures clarity and understanding, leaving no room for ambiguity. As a Consultant Manager, Jonas is not only highly informed but is also passionate about evolving and perfecting his craft. He has a significant presence in forward-looking industries such as embedded computing and AI, and likely keeps an insightful perspective on the financial sector. Jonas is all about efficiency, proactively addressing and eliminating challenges. Beyond business, engaging with him on topics ranging from industry insights to foreign cuisine or literature is genuinely delightful."},
+  {n: "Jim Olofsson", h: "Founder ToSep, co-founder Drönarstation, Machine Learning Engineer", m: "September 17, 2023, Jim was Jonas's client", t: "Thanks to Jonas, I've connected with the right individuals for software development projects. His mindset and approach to sales and networking create significant value."},
+  {n: "Per Nordlöw", h: "Mjukvaruprogrammerare på Salutech AB", m: "September 17, 2023, Per was Jonas's mentor", t: "Honest and humble, Jonas has a genuine passion for sharing and coaching, especially in marketing and sales. He's sharp as a tack when it comes to judging character and has taught me never to settle for less than I truly deserve. He was a significant source of inspiration and support as I embarked on starting my own IT consultancy business. He's the most profound entrepreneurial motivator I know."},
+  {n: "Napoleon Rydberg", h: "VD med kundfokus | 9 av 10 kunder vill anställa våra konsulter | Mjukvaruutvecklare |", m: "September 17, 2023, Napoleon worked with Jonas but they were at different companies", t: "Jonas is a driven and positive person who holds a professional approach to the work he is involved in, particularly in sales and marketing. He has a good sense of feeling for people in general, and I would consider him a person of genuine and honest character. If you happen to be given the chance to work with Jonas, do not hesitate to take the opportunity."},
+  {n: "Hamid Najafi", h: "Senior Infrastructure Architect | Azure &amp; AI Solutions Architect Expert | Windows Server · Active Directory · VMware · Proxmox · Security", m: "September 17, 2023, Hamid worked with Jonas but on different teams", t: "Jonas is an excellent team player and leader with a positive attitude, deeply rooted in marketing insights. He equipped me with practical tools for personal and professional growth. Collaborating with him is both delightful and straightforward. His work ethic is commendable, and it's truly inspiring to work alongside him."},
+  {n: "Jan Berkö", h: "Head of Business Development på Delorean AB | Digital Strategy | Digital Business Development.", m: "September 17, 2023, Jan worked with Jonas but on different teams", t: "Jonas is reliable, proactive, and delivers results. He's dedicated and always willing to help others achieve their goals. A character-driven, highly ambitious, and motivated individual with contagious enthusiasm. I worked at the same marketing company as Jonas, Bonnier Business Media."},
+  {n: "Henry DeRolf", h: "Founder | Problem Solver | Entrepreneur | Always Networking, Feel Free To Reach Out", m: "September 17, 2023, Henry was Jonas's client", t: "I strongly recommend Jonas Hyltén to anyone looking to elevate their digital marketing strategy, especially in the realm of marketing automation. With his expertise, he not only helped me establish but also rapidly advance a sophisticated marketing automation system for effectively sourcing potential business deals and partners. His deep understanding of marketing automation makes him an invaluable asset to create dealflow."},
+  {n: "Johan Jonker", h: "Arbetskonsulent / Administration och nätverkande / Socialdemokraterna. nr.46, kommunfullmäktigelistan / Jönköpings kommun / Nässjö kommun / Jönköping university / Redo för nya utmaningar /", m: "September 17, 2023, Johan worked with Jonas but they were at different companies", t: "Jonas is exceptionally skilled at motivating people. He coached me in sales and digital marketing, equipping me with valuable expertise in the business realm. Don't hesitate to reach out to Jonas if you need coaching and guidance in this area."},
+  {n: "Rolf Springfeldt", h: "Interim Manager SciLifeLab Datacenter", m: "September 11, 2022, Rolf was Jonas's mentor", t: "Jonas is a driven entrepreneur with a \"Just Do It\" mentality and a strong intellectual capacity allowing Jonas to understand the delicate task of balancing opportunities and mitigating risks. I really appreciate Jonas curiosity for new knowledge, humble personality and strong family values which I think makes him a mature business leader."},
+  {n: "Per Nordlöw", h: "Mjukvaruprogrammerare på Salutech AB", m: "July 1, 2022, Per was Jonas's client", t: "Ärlig och ödmjuk med ett genuint kall för att dela med sig och coacha. En mycket god människokännare. Har lärt mig att man inte ska nöja sig med något annat än det man verkligen är värd. Inspirerande och stöttade mig i processen att starta eget bolag inom IT-konsultbranchen. Den bredaste inspiratören till entreprenörskap jag känner."},
+  {n: "Jan-Philipp Arps", h: "Manager for Agile Teams Ericsson | Senior Scrum Master &amp; Agile Project Manager AFRY | Co-founder Employchain | Data Analyst | Web Developer | IT-Technician | PSM II | CSPO | SAFe 6 Agilist", m: "June 27, 2022, Jan-Philipp worked with Jonas but they were at different companies", t: "I had the privilege of meeting Jonas during my incubator time at Science Park Jönköping. Jonas was founding his company Krets at the time and stood out to me for his hard and disciplined work. I found Jonas to be a very likeable, pleasant and positive person who showed great expertise in networking and sales."},
+  {n: "Mazen Allaou", h: "Embedded Software Developer | Consultant at Crowd Collective", m: "June 21, 2022, Mazen reported to Jonas directly", t: "En mycket ödmjuk person som jag litar på eftersom han lägger upp korten på bordet och pratar öppet. Jonas är en grym ledare som ständigt är alert, verkligen lyssnar på vad man säger och agerar effektivt och direkt för att får saker gjort. Hans bakgrund som säljare är ett stort plus och han ger ständig feedback och tips på vad man kan göra annorlunda för att utvecklas som person. Jonas coachade mig genom flertalet lager av intervjuteknik som var helt främmande för mig trots att jag har varit med ett tag och känner till flera intervjutekniker. Älskar att prata med Jonas, blir så glad när han ringer upp för att kolla läget och snacka lite allt möjligt. I snitt 1-2 ggr i veckan vilket är grymt mycket mer än vad jag är van vid från andra ledare, klockren 10 av 10 poäng."},
+  {n: "Bahman Hellysaz", h: "FPGA Designer VHDL design Engineer (FPGA) HW/SW-system design for embedded systems", m: "May 27, 2022, Bahman reported to Jonas directly", t: "Jag har haft förmånen att jobba med Jonas under min tid på Krets Consulting Group AB. Han är otroligt professionell, stabil och en lyhörd ledare. Med sin positiva energi och effektivitet gör han ett utomordentligt jobb samtidigt som han är skicklig i att matcha detaljerat mot tekniska konsultuppdrag. Jag kan varmt rekommendera Jonas!"},
+  {n: "Elias Sahiti", h: "IT Architect @ Region Jönköpings län", m: "May 4, 2022, Elias was Jonas's client", t: "Jonas hjälpte mig till rätt konsultuppdrag och utgår från mina mål. Transparent och tillgänglig."},
+  {n: "Olle Zander", h: "Digital Marketing &amp; Sales Manager", m: "May 19, 2021, Olle worked with Jonas but they were at different companies", t: "Jonas har ett stort driv i att lära sig och bemästra det allra senaste inom marknadsföring. Något jag märkt genom de diskussioner om marknadsföring vi haft och kurser han tar för att alltid bli bättre som i ex. inbound och content marketing. På sociala medier står han ut där han lyckades bygga upp över 1000 relevanta följare till Krets företagssida. En viktig stomme för deras nätverk av jobbkandidater och företag."},
+  {n: "Bo Johan Wigfeldt", h: "Affärsutvecklande Jurist, Investerare och AI/Systemvetare- Avtal, tvister, GDPR, NIS2, Cybersäkerhet", m: "April 29, 2021, Bo Johan was Jonas's teacher", t: "Jonas är mycket professionell och strukturerad."},
+  {n: "Anne Lennartsson", h: "Kommunikation och Public Affairs, Mistra Food Futures, SLU", m: "May 24, 2018, Anne was Jonas's teacher", t: "Jonas var en av mina engagerade och vetgiriga studenter som utvecklades massor under retorikkursen. Och den utvecklingen är jag övertygad om har säkert bara fortsatt =)"},
+  {n: "Richard Thunström", h: "Be the change!", m: "May 11, 2018, Richard worked with Jonas but on different teams", t: "Jonas är en framåtlutad person med mycket engagemang och vilja! Kan rekommendera han som en väldigt trevlig kollega och säljare!"},
+  {n: "Guillermo Silva", h: "CS Hubexo", m: "May 11, 2018, Guillermo worked with Jonas but on different teams", t: "En fantastiskt duktig, professionell kille. alltid hungrig att lära i sin strävan att förbättra. Som person är han ödmjuk, trevlig, alltid ett leende och tid för sin kollega."},
+  {n: "Klas Henriksson", h: "Business Manager på Bonnier News", m: "May 10, 2018, Klas worked with Jonas but on different teams", t: "Grym på försäljning men även mycket bra strategiker (lägga upp/ planera arbetet)"},
+  {n: "Indira Idalova", h: "Controller på Socialförvaltningen", m: "May 9, 2018, Indira worked with Jonas but on different teams", t: "Jonas är en mycket trevlig, social och kompetent person, alltid positiv och glad! Mina bästa rekommendationer till Jonas! ⭐️⭐️⭐️⭐️⭐️"},
+  {n: "Julia Rhönnander (F.d.Rhönnstad)", h: "Connecting top Tech talent to the best IT and Tech businesses in Sweden💥 #Hire4fit", m: "May 9, 2018, Julia worked with Jonas on the same team", t: "Arbetade med Jonas på Ring Up Trecom i Jönköping. En kille som tar stort ansvar och har en tendens till att få saker att hända. Stort engagemang och viljan att lyckas. En bra kollega med nära till skratt som också bryr sig om personer i sin omgivning och jag tror det är de som är hans styrka- att personer köper av honom för han säljer med hjärta och personlighet."},
+  {n: "Valentino Rongione", h: "Försäljning, organisation, kommunikation &amp; ledarskap", m: "May 9, 2018, Valentino worked with Jonas but on different teams", t: "mycket seriös o grym på försäljning"},
+  {n: "Michael Yammin Finta", h: "Marketing Manager at CR Group", m: "September 29, 2015, Michael was Jonas's client", t: "Jonas är noga och lojal. Han sprider ett förtroende som person och uppgiften."},
+  {n: "Patrik Wohlfeil", h: "Ökar bolags intäkter och kompetens inom försäljning och marknadskommunikation", m: "August 19, 2012, Patrik worked with Jonas but they were at different companies", t: "Jag har haft nöjet att utbilda Jonas i försäljning och Jonas tillhör dom få procenten som en säljchef alltid letar efter i sitt team. Lycka till!"}
+];
+document.getElementById("recCount").textContent = recs.length;
+const box = document.getElementById("recs");
+recs.forEach(r => {
+  const card = document.createElement("div");
+  card.className = "rec";
+  const who = document.createElement("div");
+  who.className = "who";
+  const name = document.createElement("div");
+  name.className = "name";
+  name.textContent = r.n;
+  const head = document.createElement("div");
+  head.className = "headline";
+  head.innerHTML = r.h;
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  meta.textContent = r.m;
+  const body = document.createElement("div");
+  body.className = "body";
+  body.innerHTML = r.t;
+  who.appendChild(name);
+  who.appendChild(head);
+  card.appendChild(who);
+  card.appendChild(meta);
+  card.appendChild(body);
+  box.appendChild(card);
+});
 </script>
 
 </body>
