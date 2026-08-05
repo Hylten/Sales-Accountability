@@ -224,6 +224,13 @@ const recs = [
   {n: "Michael Yammin Finta", h: "Marketing Manager at CR Group", m: "September 29, 2015, Michael was Jonas's client", t: "Jonas är noga och lojal. Han sprider ett förtroende som person och uppgiften."},
   {n: "Patrik Wohlfeil", h: "Ökar bolags intäkter och kompetens inom försäljning och marknadskommunikation", m: "August 19, 2012, Patrik worked with Jonas but they were at different companies", t: "Jag har haft nöjet att utbilda Jonas i försäljning och Jonas tillhör dom få procenten som en säljchef alltid letar efter i sitt team. Lycka till!"}
 ];
+/* De 4 utvalda först (bäst för buyer personan), resten i originalordning */
+const FEATURED = ["Valentino Rongione", "Jan Berkö", "Frank J. Braider III", "Richard Thunström"];
+recs.sort((a, b) => {
+  const ia = FEATURED.indexOf(a.n);
+  const ib = FEATURED.indexOf(b.n);
+  return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+});
 const box = document.getElementById("recs");
 function renderRec(r) {
   const card = document.createElement("div");
@@ -246,14 +253,14 @@ function renderRec(r) {
   card.appendChild(body);
   return card;
 }
-const PER_PAGE = 6;
+const PER_PAGE = 4;
 recs.slice(0, PER_PAGE).forEach(r => box.appendChild(renderRec(r)));
 if (recs.length > PER_PAGE) {
   const more = document.createElement("div");
   more.className = "recs-more";
   const btn = document.createElement("button");
   btn.className = "btn btn-ghost";
-  btn.textContent = "Visa alla " + recs.length + " rekommendationer";
+  btn.textContent = "Visa resterande " + (recs.length - PER_PAGE) + " rekommendationer";
   btn.addEventListener("click", () => {
     recs.slice(PER_PAGE).forEach(r => box.appendChild(renderRec(r)));
     more.remove();
