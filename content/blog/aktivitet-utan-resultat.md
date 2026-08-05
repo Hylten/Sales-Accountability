@@ -35,13 +35,13 @@ Progression är det enda som räknas. Ett samtal utan ett bokat nästa steg är 
 
 ### Demos som inte stänger
 
-Demos hålls för att teamet tror att fler demos ger fler affärer. Sanningen är att en demo utan en tydlig beslutsprocess är underhållning. Kunden ser produkten, tycker att den är bra, och försvinner ur pipelinen utan beslut.
+Demos hålls för att teamet tror att fler demos ger fler affärer. Sanningen är att en demo utan en tydlig beslutsprocess är underhållning. Kunden ser produkten, tycker att den är bra och försvinner ur pipelinen utan beslut.
 
 En demo ska leda till ett beslut: gå vidare eller dö. Annars är den en aktivitetssiffra och inget annat.
 
 ## Varför aktivitet mäts i stället för utfall
 
-Systemet mäter aktivitet av tre skäl, och alla tre är mänskliga. Det första är att aktivitet är lätt att mäta. Utfall kräver att man definierar vad som räknas, och det är svårare.
+Systemet mäter aktivitet av tre skäl och alla tre är mänskliga. Det första är att aktivitet är lätt att mäta. Utfall kräver att man definierar vad som räknas och det är svårare.
 
 Det andra är att aktivitetsrapportering skjuter ansvaret framför sig. Säljaren rapporterar vad han gjorde, inte vad han åstadkom. Ledningen får en känsla av rörelse utan att behöva hantera de svåra samtalen om varför affärer inte stängs.
 
@@ -61,18 +61,18 @@ De här måtten är jobbiga för att de visar sanningen. De är också de enda s
 
 ## Så vänder du det på 30 dagar
 
-Förändringen kräver inget nytt verktyg. Den kräver nya regler, och de införs på en månad.
+Förändringen kräver inget nytt verktyg. Den kräver nya regler och de införs på en månad.
 
 - Vecka 1: Definiera vad ett kvalificerat möte är. Skriv ned kriterierna och kräv att de används före varje bokning.
 - Vecka 2: Börja mäta konvertering per steg. Räkna inte möten, räkna övergångar.
-- Vecka 3: Granska två samtal per säljare. Ett bra och ett mindre bra, och peka på var progressionen tappas.
-- Vecka 4: Inför binära mål. Nådde vi konverteringsmålen, ja eller nej, och vem äger svaret?
+- Vecka 3: Granska två samtal per säljare. Ett bra och ett mindre bra och peka på var progressionen tappas.
+- Vecka 4: Inför binära mål. Nådde vi konverteringsmålen, ja eller nej och vem äger svaret?
 
 Efter trettio dagar har du siffror som går att agera på. Mötesvolymen får gärna sjunka. Det betyder att kvaliteten stiger.
 
 ## Ett räkneexempel
 
-Ett bolag med tjugo möten i veckan och en konvertering på fem procent stänger en affär i veckan. Mötesvolymen fördubblas till fyrtio, och konverteringen halveras till två och en halv procent. Resultatet är fortfarande en affär i veckan, med dubbelt så hög kostnad.
+Ett bolag med tjugo möten i veckan och en konvertering på fem procent stänger en affär i veckan. Mötesvolymen fördubblas till fyrtio och konverteringen halveras till två och en halv procent. Resultatet är fortfarande en affär i veckan, med dubbelt så hög kostnad.
 
 Samma bolag behåller tjugo möten och höjer konverteringen till tio procent genom att kvalificera bättre. Resultatet är två affärer i veckan utan ett enda extra möte. Det är skillnaden mellan att mäta aktivitet och att mäta utfall.
 
