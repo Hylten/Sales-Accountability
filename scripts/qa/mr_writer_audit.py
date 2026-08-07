@@ -76,6 +76,11 @@ OVERCLAIM_PATTERNS = [
     r"not speculation but", r"\birreversib", r"will not reverse", r"\bguaranteed\b",
     r"\bdefinitively\b", r"has entirely disappeared", r"\bgenerationally\b",
     r"the market (no longer|now) punishes", r"has (all but |completely |entirely )?(vanished|died)",
+    r"(?<!one of )\bthe (single most|single largest|most significant)\b", r"\bcaptures? the spread\b",
+]
+# Kausala påståenden ("one reason", "is why") — granskas i claim-audit (kräver källa/etikett i närheten)
+CAUSAL_PATTERNS = [
+    r"\b(one reason|a key reason|a major driver|is why|a reason for the (growth|rise|shift))\b",
 ]
 STAT_RE = re.compile(
     r"\d+\s?%|\b\d+\s?(percent|procent)\b|\$\d|€|£"
@@ -337,13 +342,17 @@ class Audit:
         lines = body.splitlines()
         out = []
         for i, ln in enumerate(lines, 1):
-            if not STAT_RE.search(ln) and not any(re.search(p, ln, re.I) for p in OVERCLAIM_PATTERNS):
+            hit_stat = bool(STAT_RE.search(ln))
+            hit_over = any(re.search(p, ln, re.I) for p in OVERCLAIM_PATTERNS)
+            hit_causal = any(re.search(p, ln, re.I) for p in CAUSAL_PATTERNS)
+            if not (hit_stat or hit_over or hit_causal):
                 continue
             window = " ".join(lines[max(0, i - 3):i + 1]).lower()
             src = any(s in window for s in CLAIM_SOURCES)
             lab = any(w in ln.lower() for w in self.LABEL_WORDS)
             verdict = "OK" if (src or lab) else "SAKNAD KÄLLA/ETIKETT"
-            out.append((i, ln.strip()[:140], verdict))
+            kind = "siffra/absolut" if (hit_stat or hit_over) else "kausalt påstående"
+            out.append((i, ln.strip()[:140], verdict, kind))
         return out
 
     # -- REVISIONS-HJÄLPARE: bygg DeepSeek-prompt med exakt vilka WARN/BLOCK som ska lösas
@@ -544,10 +553,10 @@ def main():
             print("Fil finns inte:", f)
             sys.exit(2)
         rows = a.claim_audit(f)
-        print(f"CLAIM-AUDIT: {args.claims} ({len(rows)} påståenden med siffra/absolut)")
-        for ln, sent, verdict in rows:
-            print(f"  [{verdict}] rad {ln}: {sent}")
-        sys.exit(0 if all(v == "OK" for _, _, v in rows) else 1)
+        print(f"CLAIM-AUDIT: {args.claims} ({len(rows)} påståenden med siffra/absolut/kausalitet)")
+        for ln, sent, verdict, kind in rows:
+            print(f"  [{verdict}] {kind} rad {ln}: {sent}")
+        sys.exit(0 if all(v == "OK" for _, _, v, _ in rows) else 1)
     code, summary, n = a.run()
     print(f"{repo.name}: {summary}")
     if args.report:
