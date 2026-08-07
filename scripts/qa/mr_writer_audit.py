@@ -78,9 +78,10 @@ OVERCLAIM_PATTERNS = [
     r"the market (no longer|now) punishes", r"has (all but |completely |entirely )?(vanished|died)",
     r"(?<!one of )\bthe (single most|single largest|most significant)\b", r"\bcaptures? the spread\b",
 ]
-# Kausala påståenden ("one reason", "is why") — granskas i claim-audit (kräver källa/etikett i närheten)
+# Kausala/regulatoriska påståenden — granskas i claim-audit (kräver källa/etikett i närheten)
 CAUSAL_PATTERNS = [
     r"\b(one reason|a key reason|a major driver|is why|a reason for the (growth|rise|shift))\b",
+    r"\b(rules|regulations|requirements) (were|are|has been) (revised|finalized|implemented|raised)\b",
 ]
 STAT_RE = re.compile(
     r"\d+\s?%|\b\d+\s?(percent|procent)\b|\$\d|€|£"
@@ -332,7 +333,7 @@ class Audit:
     LABEL_WORDS = ["our assessment", "vår bedömning", "our experience", "vår erfarenhet",
                    "we label", "vi märker", "internal", "indicates", "estimates",
                    "approximately", "indicative", "roughly", "about ", "per ", "enligt vår",
-                   "tumregel", "uppskattning", "räkneexempel", "exempel"]
+                   "tumregel", "uppskattning", "räkneexempel", "exempel", "proposed"]
 
     def claim_audit(self, f):
         text = pathlib.Path(f).read_text(encoding="utf-8", errors="replace")
