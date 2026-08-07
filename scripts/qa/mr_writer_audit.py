@@ -65,6 +65,7 @@ CTA_PATTERNS = [
     r"kontakta oss", r"kontakta mig", r"reach out", r"hör av dig",
     r"zcal", r"calendly", r"boka 5-minuters", r"access is restricted",
     r"approved mandates", r"book a meeting", r"boka ett möte",
+    r"tactical consultation",
 ]
 # R11: käll- och överdrifttskontroll (research-integritet)
 CLAIM_SOURCES = ["ey", "pwc", "mckinsey", "cherry bekaert", "cbh", "pitchbook", "bdo", "kpmg",
@@ -76,7 +77,11 @@ OVERCLAIM_PATTERNS = [
     r"\bdefinitively\b", r"has entirely disappeared", r"\bgenerationally\b",
     r"the market (no longer|now) punishes", r"has (all but |completely |entirely )?(vanished|died)",
 ]
-STAT_RE = re.compile(r"\d+\s?%|\$\d|€|£|\b\d+[–\-]\d+\s*(months?|days?|years?|weeks?)\b|\bfold\b|\d+ of \d+")
+STAT_RE = re.compile(
+    r"\d+\s?%|\b\d+\s?(percent|procent)\b|\$\d|€|£"
+    r"|\b\d+(\.\d+)?\s?(million|billion|miljoner|miljarder|bn|mn)\b"
+    r"|\b\d+[–\-]\d+\s*(months?|days?|years?|weeks?|år|månader|dagar|veckor)\b"
+    r"|\bfold\b|\d+ of \d+|\b\d+\s?(deals|deals per|affärer|kunder|användare|företag)\b")
 CURRENCY = [r"\bUSD\b", r"\bEUR\b", r"\bGBP\b", r"€", r"£", r"\$\d"]
 
 REQUIRED_FM = ["title", "slug", "description", "date", "tags", "categories",
@@ -318,6 +323,73 @@ class Audit:
                     self.warn(f, "R11", i, f"överdrivet absolut uttryck: '{pat}'",
                               "mjukformulera eller stöd med data")
 
+    # -- CLAIM-AUDIT: extrahera varje siffra-/absolut-mening, kräv källa/etikett
+    LABEL_WORDS = ["our assessment", "vår bedömning", "our experience", "vår erfarenhet",
+                   "we label", "vi märker", "internal", "indicates", "estimates",
+                   "approximately", "indicative", "roughly", "about ", "per ", "enligt vår",
+                   "tumregel", "uppskattning", "räkneexempel", "exempel"]
+
+    def claim_audit(self, f):
+        text = pathlib.Path(f).read_text(encoding="utf-8", errors="replace")
+        fm, body = parse_frontmatter(text)
+        if fm is None:
+            return []
+        lines = body.splitlines()
+        out = []
+        for i, ln in enumerate(lines, 1):
+            if not STAT_RE.search(ln) and not any(re.search(p, ln, re.I) for p in OVERCLAIM_PATTERNS):
+                continue
+            window = " ".join(lines[max(0, i - 3):i + 1]).lower()
+            src = any(s in window for s in CLAIM_SOURCES)
+            lab = any(w in ln.lower() for w in self.LABEL_WORDS)
+            verdict = "OK" if (src or lab) else "SAKNAD KÄLLA/ETIKETT"
+            out.append((i, ln.strip()[:140], verdict))
+        return out
+
+    # -- REVISIONS-HJÄLPARE: bygg DeepSeek-prompt med exakt vilka WARN/BLOCK som ska lösas
+    def build_revision_prompt(self, f):
+        p = pathlib.Path(f)
+        lines = [
+            "Revidera följande artikel enligt audit-rapporten. HÖGST 2 revisionspass (DeepSeek).",
+            "Ändra ALDRIG verifierbara sakpåståenden, fakta eller positionering.",
+            "Lös VARJE punkt nedan: lägg källa direkt efter påståendet, eller märk som egen bedömning",
+            "('our assessment', 'vår erfarenhet', 'Roials Capitals kommersiella modell').",
+            "Mjukformulera överdrivna absoluter utan data.",
+            "Efter revision: kör `python3 scripts/qa/mr_writer_audit.py . --file <fil>` igen.",
+            "Publicera endast när audit ger 0 BLOCK och 0 olösta R11-WARN.",
+            "",
+            f"FIL: {p.name}",
+            "",
+            "AUDIT-TRÄFFAR:",
+        ]
+        for r in self.results:
+            lines.append(f"- [{r[1]}] {r[2]} rad {r[3]}: {r[4]}")
+            if r[5]:
+                lines.append(f"    fix-förslag: {r[5]}")
+        return "\n".join(lines)
+
+    # -- single-file-audit (delas av --file / --revision) -------------------
+    def audit_single_file(self, f):
+        text = f.read_text(encoding="utf-8", errors="replace")
+        fm, body = parse_frontmatter(text)
+        for i, ln in enumerate(text.splitlines(), 1):
+            for pat in LEAK_PATTERNS:
+                if re.search(pat, ln, re.I):
+                    self.fail(f, "R1", i, f"promptläckage: '{pat}'", "radera")
+        if fm is None:
+            self.fail(f, "R4", 0, "saknar frontmatter", "lägg till")
+        else:
+            lang = detect_language(body)
+            self.check_frontmatter(f, fm, body, set())
+            self.check_words(f, body)
+            self.check_structure(f, body)
+            self.check_dashes(f, body)
+            self.check_voice(f, body, lang)
+            self.check_sek(f, body)
+            self.check_cta(f, body, body.splitlines())
+            self.check_last_heading(f, body, lang)
+            self.check_claims(f, body)
+
     # -- R10: sista rubrik --------------------------------------------------
     def check_last_heading(self, f, body, lang):
         headings = re.findall(r"^##\s+.+$", body, re.M)
@@ -442,43 +514,40 @@ def main():
     ap.add_argument("--fix", action="store_true")
     ap.add_argument("--report")
     ap.add_argument("--file")
+    ap.add_argument("--claims")
+    ap.add_argument("--revision")
     args = ap.parse_args()
     repo = pathlib.Path(args.repo).expanduser()
     if not repo.exists():
         print("Repo finns inte:", repo)
         sys.exit(2)
     a = Audit(repo, do_fix=args.fix)
-    if args.file:
-        f = repo / args.file
+    if args.file or args.revision:
+        f = repo / (args.file or args.revision)
         if not f.exists():
             print("Fil finns inte:", f)
             sys.exit(2)
-        text = f.read_text(encoding="utf-8", errors="replace")
-        fm, body = parse_frontmatter(text)
-        for i, ln in enumerate(text.splitlines(), 1):
-            for pat in LEAK_PATTERNS:
-                if re.search(pat, ln, re.I):
-                    a.fail(f, "R1", i, f"promptläckage: '{pat}'", "radera")
-        if fm is None:
-            a.fail(f, "R4", 0, "saknar frontmatter", "lägg till")
-        else:
-            lang = detect_language(body)
-            a.check_frontmatter(f, fm, body, set())
-            a.check_words(f, body)
-            a.check_structure(f, body)
-            a.check_dashes(f, body)
-            a.check_voice(f, body, lang)
-            a.check_sek(f, body)
-            a.check_cta(f, body, body.splitlines())
-            a.check_last_heading(f, body, lang)
-            a.check_claims(f, body)
+        a.audit_single_file(f)
         if args.fix:
             a.apply_fixes()
+        if args.revision:
+            print(a.build_revision_prompt(f))
+            sys.exit(0 if all(r[1] != "BLOCK" for r in a.results) else 1)
         for r in a.results:
             print(f"[{r[1]}] {r[2]} {pathlib.Path(r[0]).name}:{r[3]} {r[4]}")
         if args.report:
             a.report(pathlib.Path(args.report))
         sys.exit(0 if all(r[1] != "BLOCK" for r in a.results) else 1)
+    if args.claims:
+        f = repo / args.claims
+        if not f.exists():
+            print("Fil finns inte:", f)
+            sys.exit(2)
+        rows = a.claim_audit(f)
+        print(f"CLAIM-AUDIT: {args.claims} ({len(rows)} påståenden med siffra/absolut)")
+        for ln, sent, verdict in rows:
+            print(f"  [{verdict}] rad {ln}: {sent}")
+        sys.exit(0 if all(v == "OK" for _, _, v in rows) else 1)
     code, summary, n = a.run()
     print(f"{repo.name}: {summary}")
     if args.report:
