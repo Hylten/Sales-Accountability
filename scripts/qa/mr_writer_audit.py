@@ -66,6 +66,17 @@ CTA_PATTERNS = [
     r"zcal", r"calendly", r"boka 5-minuters", r"access is restricted",
     r"approved mandates", r"book a meeting", r"boka ett möte",
 ]
+# R11: käll- och överdrifttskontroll (research-integritet)
+CLAIM_SOURCES = ["ey", "pwc", "mckinsey", "cherry bekaert", "cbh", "pitchbook", "bdo", "kpmg",
+                 "abf journal", "proskauer", "per ", "enligt", "according to", "reports", "data",
+                 "source", "källa", "preqin", "bain", "reuters", "bloomberg", "eba", "freddie"]
+OVERCLAIM_PATTERNS = [
+    r"\bclockwork\b", r"\beliminates\b", r"\bevaporated\b", r"\bpunishes\b",
+    r"not speculation but", r"\birreversib", r"will not reverse", r"\bguaranteed\b",
+    r"\bdefinitively\b", r"has entirely disappeared", r"\bgenerationally\b",
+    r"the market (no longer|now) punishes", r"has (all but |completely |entirely )?(vanished|died)",
+]
+STAT_RE = re.compile(r"\d+\s?%|\$\d|€|£|\b\d+[–\-]\d+\s*(months?|days?|years?|weeks?)\b|\bfold\b|\d+ of \d+")
 CURRENCY = [r"\bUSD\b", r"\bEUR\b", r"\bGBP\b", r"€", r"£", r"\$\d"]
 
 REQUIRED_FM = ["title", "slug", "description", "date", "tags", "categories",
@@ -293,6 +304,20 @@ class Audit:
                 if re.search(r"<!--|-->|TODO:|FIXME:|arbetskommentar|work in progress", aln):
                     self.fail(f, "R9", j, "arbetskommentar efter sista rubriken", "radera")
 
+    # -- R11: käll- och överdrifttskontroll ---------------------------------
+    def check_claims(self, f, body):
+        lines = body.splitlines()
+        for i, ln in enumerate(lines, 1):
+            if STAT_RE.search(ln):
+                window = " ".join(lines[max(0, i - 3):i + 1]).lower()
+                if not any(s in window for s in CLAIM_SOURCES):
+                    self.warn(f, "R11", i, "siffra utan källa i närheten",
+                              "lägg källa (EY/PwC/McKinsey/PitchBook m.fl.) eller märk som egen bedömning")
+            for pat in OVERCLAIM_PATTERNS:
+                if re.search(pat, ln, re.I):
+                    self.warn(f, "R11", i, f"överdrivet absolut uttryck: '{pat}'",
+                              "mjukformulera eller stöd med data")
+
     # -- R10: sista rubrik --------------------------------------------------
     def check_last_heading(self, f, body, lang):
         headings = re.findall(r"^##\s+.+$", body, re.M)
@@ -335,6 +360,7 @@ class Audit:
                 lines = body.splitlines()
                 self.check_cta(f, body, lines)
                 self.check_last_heading(f, body, lang)
+                self.check_claims(f, body)
         # --fix-applikation (efter analys)
         if self.do_fix:
             self.apply_fixes()
@@ -445,6 +471,7 @@ def main():
             a.check_sek(f, body)
             a.check_cta(f, body, body.splitlines())
             a.check_last_heading(f, body, lang)
+            a.check_claims(f, body)
         if args.fix:
             a.apply_fixes()
         for r in a.results:
